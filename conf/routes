@@ -8,6 +8,10 @@
 GET     /                           @controllers.Application.index
 GET     /randomUUID                 @controllers.Application.randomUUID
 
+# Securesocial
+GET     /login                      securesocial.controllers.LoginPage.login
+GET     /logout                     securesocial.controllers.LoginPage.logout
+
 # User management API
 GET     /users                      @controllers.Users.findUsers
 POST    /user                       @controllers.Users.createUser
