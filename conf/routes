@@ -8,7 +8,7 @@
 GET     /                           @controllers.Application.index
 
 GET     /login                      @controllers.Authentication.login
-GET     /login                      @controllers.Authentication.authenticate
+POST    /login                      @controllers.Authentication.authenticate
 GET     /logout                     @controllers.Authentication.logout
 
 GET     /randomUUID                 @controllers.Application.randomUUID
