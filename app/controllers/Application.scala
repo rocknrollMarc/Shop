@@ -11,13 +11,13 @@ import play.api.mvc._
  * @param uuidGenerator the UUID generator service we wish to receive.
  */
 @Singleton
-class Application @Inject() (uuidGenerator: UUIDGenerator) extends Controller {
+class Application @Inject() (uuidGenerator: UUIDGenerator) extends Controller with Secured {
 
   private final val logger: Logger = LoggerFactory.getLogger(classOf[Application])
 
-  def index = Action {
+  def index = withAuth { username => implicit request => 
     logger.info("Serving index page...")
-    Ok(views.html.index())
+    Ok(html.index(helloForm))
   }
 
   def login = Action {
