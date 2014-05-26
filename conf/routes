@@ -6,6 +6,9 @@
 
 # Single endpoint for serving AngularJS
 GET     /                           @controllers.Application.index
+
+GET     /login                           @controllers.Application.login
+
 GET     /randomUUID                 @controllers.Application.randomUUID
 
 # User management API

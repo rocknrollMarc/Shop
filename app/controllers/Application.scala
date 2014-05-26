@@ -20,6 +20,11 @@ class Application @Inject() (uuidGenerator: UUIDGenerator) extends Controller {
     Ok(views.html.index())
   }
 
+  def login = Action {
+    logger.info("Login Action")
+    Ok(views.html.user())
+  }
+
   def randomUUID = Action {
     logger.info("calling UUIDGenerator...")
     Ok(uuidGenerator.generate.toString)

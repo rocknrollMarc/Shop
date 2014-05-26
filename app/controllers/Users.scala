@@ -15,7 +15,6 @@ import play.api.libs.json._
  * play plugin. This provides a non-blocking driver for mongoDB as well as some useful additions for handling JSon.
  * @see https://github.com/ReactiveMongo/Play-ReactiveMongo
  */
-@Singleton
 class Users extends Controller with MongoController {
 
   private final val logger: Logger = LoggerFactory.getLogger(classOf[Users])

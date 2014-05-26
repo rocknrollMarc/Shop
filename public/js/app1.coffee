@@ -15,7 +15,7 @@ app = angular.module('myApp', dependencies)
 angular.module('myApp.routeConfig', ['ngRoute'])
     .config ($routeProvider) ->
         $routeProvider
-            .when('/', {
+            .when('/login', {
                 templateUrl: '/assets/partials/view.html'
             })
             .when('/users/create', {
