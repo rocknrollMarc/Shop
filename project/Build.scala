@@ -10,12 +10,13 @@ object ApplicationBuild extends Build {
 
   val appDependencies = Seq(
     "net.codingwell" %% "scala-guice" % "4.0.1",
-    "com.google.inject" % "guice" % "3.0",
+    "com.google.inject" % "guice" % "4.0",
     //"javax.inject" % "javax.inject" % "1",
     //"org.reactivemongo" %% "reactivemongo" % "0.10.0",
     //"org.reactivemongo" %% "play2-reactivemongo" % "0.10.2",
 	"org.reactivemongo" %% "play2-reactivemongo" % "0.11.14",//for play-2.5.x
-    "org.mockito" % "mockito-core" % "1.9.5" % "test"
+    "org.mockito" % "mockito-core" % "1.9.5" % "test",
+	specs2 % Test
   )
 
 
