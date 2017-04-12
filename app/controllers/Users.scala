@@ -1,6 +1,7 @@
 package controllers
 
 import play.modules.reactivemongo.MongoController
+import play.modules.reactivemongo.ReactiveMongoComponents
 import play.modules.reactivemongo.json.collection.JSONCollection
 import scala.concurrent.Future
 import reactivemongo.api.Cursor
@@ -9,6 +10,9 @@ import org.slf4j.{LoggerFactory, Logger}
 import javax.inject.Singleton
 import play.api.mvc._
 import play.api.libs.json._
+import scala.collection.immutable.List
+import play.modules.reactivemongo.ReactiveMongoApi
+import javax.inject.Inject
 
 /**
  * The Users controllers encapsulates the Rest endpoints and the interaction with the MongoDB, via ReactiveMongo
@@ -16,7 +20,7 @@ import play.api.libs.json._
  * @see https://github.com/ReactiveMongo/Play-ReactiveMongo
  */
 @Singleton
-class Users extends Controller with MongoController {
+class Users @Inject() (val reactiveMongoApi: ReactiveMongoApi) extends Controller with MongoController with ReactiveMongoComponents {
 
   private final val logger: Logger = LoggerFactory.getLogger(classOf[Users])
 
@@ -27,7 +31,9 @@ class Users extends Controller with MongoController {
    * the collection reference to avoid potential problems in development with
    * Play hot-reloading.
    */
-  def collection: JSONCollection = db.collection[JSONCollection]("users")
+  //def collection: JSONCollection = db.collection[JSONCollection]("users")
+  def collection2 = reactiveMongoApi.database.
+    map(_.collection[JSONCollection]("articles"))
 
   // ------------------------------------------ //
   // Using case classes + Json Writes and Reads //
@@ -48,26 +54,27 @@ class Users extends Controller with MongoController {
       request.body.validate[User].map {
         user =>
         // `user` is an instance of the case class `models.User`
-          collection.insert(user).map {
+          collection2.flatMap(_.insert(user).map {
             lastError =>
               logger.debug(s"Successfully inserted with LastError: $lastError")
               Created(s"User Created")
-          }
+          })
       }.getOrElse(Future.successful(BadRequest("invalid json")))
   }
-
   def findUsers = Action.async {
+    import play.modules.reactivemongo.json._
     // let's do our query
-    val cursor: Cursor[User] = collection.
+    val cursor: Future[Cursor[User]] = collection2.map(_.
       // find all
       find(Json.obj("active" -> true)).
       // sort them by creation date
       sort(Json.obj("created" -> -1)).
       // perform the query and get a cursor of JsObject
       cursor[User]
+    )
 
     // gather all the JsObjects in a list
-    val futureUsersList: Future[List[User]] = cursor.collect[List]()
+    val futureUsersList: Future[List[User]] = cursor.flatMap(_.collect[List]())
 
     // transform the list into a JsArray
     val futurePersonsJsonArray: Future[JsArray] = futureUsersList.map { users =>
@@ -76,7 +83,7 @@ class Users extends Controller with MongoController {
     // everything's ok! Let's reply with the array
     futurePersonsJsonArray.map {
       users =>
-        Ok(users(0))
+        Ok(users(0).get)
     }
   }
 
